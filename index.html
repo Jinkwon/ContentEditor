@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+
+    <style>
+        .editor_section{
+
+            margin:0;
+            padding:0;
+        }
+        .cke_editable {
+            outline: none;
+        }
+
+        .ui-sortable-placeholder {
+            outline: 1px dashed #aaa;
+            background: #ccc;
+        }
+
+        .editor_section > div{
+            /*border:1px solid #AAA;*/
+            margin:0;
+            padding:0px;
+            position:relative;
+
+            display:block;
+            z-index:0;
+            box-sizing:border-box;
+            background-color:#FFF;
+
+        }
+        .editor_section > div.hover{
+            box-sizing: border-box;
+            z-index:100;
+            box-shadow: inset 0px 0px 20px 3px #ddd, inset 0 0 1px #000;
+            background: #eee;
+        }
+        .editor_section > div.grap{
+            box-shadow: inset 0px 0px 30px 3px #ddd, inset 0 0 1px #000 !important;
+        }
+
+        .editor_section p {
+            margin: 0 auto;
+        }
+
+        /* Once an editable element gets focused, the "cke_focus" class is added to it, so we can style it differently. */
+        .cke_editable.cke_editable_inline.cke_focus
+        {
+            outline: none;
+
+            cursor: text;
+        }
+
+        .remove_item{
+            position:absolute;
+            display: block;
+
+            cursor:pointer;
+            right: 5px;
+            top: 5px;
+            width: 14px;
+            height: 14px;
+            background: url("remove.png") no-repeat;
+        }
+    </style>
+</head>
+
+
+<body style="background-color:#EEE;margin:0;padding:0;">
+
+<div style="margin:20px;max-width: 900px;min-width: 500px;min-height: 600px;">
+<div style="padding:15px;background-color:#FFF;border:1px solid #CCC;">
+    <div id="_content_editor" class="editor_section">
+        <!--<div>1<br>2<br>3<br></div>-->
+        <!--<div>1<br>2<br>3<br></div>-->
+        <!--<div>1<br>2<br>3<br></div>-->
+        <!--<div>4</div>-->
+        <!--<div>5</div>-->
+    </div>
+
+    <div style="width:100%;height:100px;text-align:center;font-size:25px;cursor:pointer;" id="_append_item">  </div>
+</div>
+
+<div style="background: url('bg.story.png') no-repeat right bottom;opacity: .5;filter: alpha(opacity=50);max-width: 900px;min-width: 500px;height: 16px;margin: 0 auto;"></div>
+</div>
+
+<link rel="stylesheet" href="bower_components/jquery-ui/themes/base/jquery.ui.all.css"/>
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="bower_components/jquery-ui/ui/jquery-ui.js"></script>
+<script src="bower_components/ckeditor/ckeditor.js"></script>
+<script src="bower_components/underscore/underscore.js"></script>
+<script src="bower_components/backbone/backbone.js"></script>
+<script src="src/ContentEditorView.js"></script>
+<script>
+    new ContentEditorView({
+        el : $('#_content_editor')
+    });
+</script>
+</body>
+</html>
