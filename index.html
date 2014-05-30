@@ -70,6 +70,10 @@
 
 <body style="background-color:#EEE;margin:0;padding:0;">
 
+<button id="_add_img">이미지추가</button>
+<button id="_add_movie">동영상추가</button>
+
+
 <div style="margin:20px;max-width: 900px;min-width: 500px;min-height: 600px;">
 <div style="padding:15px;background-color:#FFF;border:1px solid #CCC;">
     <div id="_content_editor" class="editor_section">
@@ -77,14 +81,15 @@
         <!--<div>1<br>2<br>3<br></div>-->
         <!--<div>1<br>2<br>3<br></div>-->
         <!--<div>4</div>-->
-        <!--<div>5</div>-->
     </div>
 
-    <div style="width:100%;height:100px;text-align:center;font-size:25px;cursor:pointer;" id="_append_item">  </div>
+    <div style="width:100%;padding:20px;text-align:center;font-size:25px;cursor:pointer;" id="_append_item"> + </div>
 </div>
 
 <div style="background: url('bg.story.png') no-repeat right bottom;opacity: .5;filter: alpha(opacity=50);max-width: 900px;min-width: 500px;height: 16px;margin: 0 auto;"></div>
 </div>
+
+
 
 <link rel="stylesheet" href="bower_components/jquery-ui/themes/base/jquery.ui.all.css"/>
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -94,6 +99,21 @@
 <script src="bower_components/backbone/backbone.js"></script>
 <script src="src/ContentEditorView.js"></script>
 <script>
+
+    $('#_add_img').on('click', function(){
+
+        $('#_content_editor').append('<div style="text-align:center;"><img src="cat.jpg" style="max-width:300px;"></div>')
+
+    });
+
+    $('#_add_movie').on('click', function(){
+
+        $('#_content_editor').append('<div style="text-align:center;"><iframe width="560" height="315" src="//www.youtube.com/embed/NP5Cb3Gpjio" frameborder="0" allowfullscreen></iframe></div>')
+
+    });
+
+
+
     new ContentEditorView({
         el : $('#_content_editor')
     });

@@ -16,7 +16,6 @@ var ContentEditorView = Backbone.View.extend({
 
             // Customize editors for headers and tag list.
             // These editors don't need features like smileys, templates, iframes etc.
-            if ( element.is( 'h1', 'h2', 'h3' ) || element.getAttribute( 'id' ) == 'taglist' ) {
                 // Customize the editor configurations on "configLoaded" event,
                 // which is fired after the configuration file loading and
                 // execution. This makes it possible to change the
@@ -30,17 +29,20 @@ var ContentEditorView = Backbone.View.extend({
 
                     // Rearrange the layout of the toolbar.
                     editor.config.toolbarGroups = [
-                        { name: 'editing',		groups: [ 'basicstyles', 'links' ] },
-                        { name: 'undo' },
-                        { name: 'clipboard',	groups: [ 'selection', 'clipboard' ] },
-                        { name: 'about' }
+                        { name: 'editing',		groups: [ 'basicstyles', 'links' ] }
+//                        { name: 'undo' },
+//                        { name: 'clipboard',	groups: [ 'selection', 'clipboard' ] },
+//                        { name: 'about' }
                     ];
                 });
-            }
         });
+
 
         this.$el.on('blur', 'div', $.proxy(function(e){
 
+//            if($(e.currentTarget).attr('id') === '__cke'){
+//                return;
+//            }
 
             $(e.currentTarget)
                 .removeAttr('contenteditable')
@@ -48,7 +50,6 @@ var ContentEditorView = Backbone.View.extend({
 
 
             if($(e.currentTarget).html() === ''){
-
                 $(e.currentTarget).remove();
             }
 
@@ -69,12 +70,9 @@ var ContentEditorView = Backbone.View.extend({
 
             $(e.currentTarget).parent().slideUp(300, $.proxy(function(){
                 target.remove();
-
-                this.$el.sortable("option", 'disabled', false);
+                this.$el.sortable("option", 'disabled', false).disableSelection();
 
             }, this));
-
-
 
             e.stopPropagation();
             return false;
@@ -94,16 +92,17 @@ var ContentEditorView = Backbone.View.extend({
 
         this.$el.on('mouseleave', 'div', $.proxy(function(e){
             $(e.currentTarget).removeClass('hover');
-
             $(e.currentTarget).find('._remove').remove();
-
         }, this));
 
 
         $('#_append_item').on('click', $.proxy(function(e){
+
+            this.$el.find('._text').removeAttr('id');
+
             $('#__cke').find('._remove').remove();
 
-            this.$el.append('<div id="__cke" style="outline:none;"></div>');
+            this.$el.append('<div id="__cke" class="_text" style="outline:none;"></div>');
 
             this.editor = CKEDITOR.inline('__cke');
 
@@ -114,8 +113,7 @@ var ContentEditorView = Backbone.View.extend({
 
 
             this.targetElement = $('#__cke');
-
-            this.$el.sortable("option", 'disabled', true);
+            this.$el.sortable("option", 'disabled', true).enableSelection();
 
 
         }, this));
@@ -124,6 +122,7 @@ var ContentEditorView = Backbone.View.extend({
 
             if(
                 $(e.currentTarget).attr('id') === '__cke' ||
+                $(e.currentTarget).hasClass('_text') === false ||
                 this.bSort === true
             ){
                 return;
@@ -142,8 +141,9 @@ var ContentEditorView = Backbone.View.extend({
 
             this.targetElement = $(e.currentTarget);
 
-            this.$el.sortable("option", 'disabled', true);
+            this.$el.sortable("option", 'disabled', true).enableSelection();
         }, this));
+
 
         this.$el.sortable({
             delay : 250,
