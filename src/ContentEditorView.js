@@ -70,7 +70,7 @@ var ContentEditorView = Backbone.View.extend({
 
             $(e.currentTarget).parent().slideUp(300, $.proxy(function(){
                 target.remove();
-                this.$el.sortable("option", 'disabled', false).disableSelection();
+                this.$el.sortable("option", 'disabled', false);
 
             }, this));
 
@@ -160,5 +160,18 @@ var ContentEditorView = Backbone.View.extend({
                 ui.item.removeClass('grap');
             }, this)
         }).disableSelection();
+
+
+        $('#_save').on('click', $.proxy(function(){
+            var aWelContents = this.$el.find('div');
+            var aResult = [];
+
+            _.each(aWelContents, function(el){
+                var sContent = $(el).html();
+                aResult.push(sContent);
+            });
+
+            alert(aResult.join('===============================================\n'));
+        }, this));
     }
 });
