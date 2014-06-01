@@ -1,8 +1,40 @@
 var ContentEditorView = Backbone.View.extend({
     initialize : function(){
-
         this.setEvents();
+        this.initComponents();
     },
+
+    initComponents : function(){
+        this.$el.sortable({
+            delay : 250,
+            axis : 'y',
+            tolerance: 'pointer',
+            revert: 250,
+//            containment: "parent",
+            cursor: "move",
+            start: $.proxy(function(e, ui ){
+
+                this.bSort = true;
+                ui.placeholder.height(ui.helper.height());
+                ui.helper.addClass('grap');
+
+                ui.placeholder.css("outline", "none");
+                ui.placeholder.css("border-radius", "3px");
+                ui.placeholder.css("border", "3px dashed #EEE");
+                ui.placeholder.css("box-sizing", "border-box");
+                ui.placeholder.css("visibility", "visible");
+                ui.placeholder.css("background-color", "#FFF");
+                ui.placeholder.css("box-shadow", "none");
+
+            }, this),
+
+            stop : $.proxy(function(e, ui){
+                this.bSort = false;
+                ui.item.removeClass('grap');
+            }, this)
+        }).disableSelection();
+    },
+
     resize : function(){
         setTimeout(function(){
             $('#_content_editor').css('height', '');
@@ -45,25 +77,17 @@ var ContentEditorView = Backbone.View.extend({
                 ];
             });
         });
-    }, setEvents : function(){
+    },
+
+    setToolEvents : function (){
 
         var current;
 
         function SetToBold (e) {
             $(current).attr('contenteditable', 'true');
             document.execCommand('bold', false, true);
-
             $(current).contents().focus();
             return false;
-        }
-
-        function resize(){
-            setTimeout(function(){
-                $('#_content_editor').css('height', '');
-                var nHeight = $('#_content_editor').height();
-                $('#_content_editor').css('height', nHeight + 'px');
-
-            }, 50);
         }
 
 
@@ -75,18 +99,56 @@ var ContentEditorView = Backbone.View.extend({
             current = this;
         });
 
-        $(document)// make sure br is always the lastChild of contenteditable
-            .on("keydown keyup", 'div[contenteditable=true]', function(e){
+        $('#_add_img').on('click', $.proxy(function (){
+            $('#_content_editor').append(_.template($('#_img_tmpl').html(), {
+                title : 'Meta Title',
+                description : 'Description'
 
-                resize();
-                if(e.which === 9) {
+            }));
+            this.resize();
+        }, this));
+
+        $('#_add_movie').on('click', $.proxy(function (){
+            $('#_content_editor').append(_.template($('#_movie_tmpl').html(), {
+                title : 'Meta Title',
+                description : 'Description'
+
+            }));
+
+            this.resize();
+        }, this));
+
+        $('#_add_text').on('click', function (){
+            $('#_append_item').trigger('click');
+        });
+
+        $('#_save').on('click', $.proxy(function(){
+            var aWelContents = this.$el.find('div');
+            var aResult = [];
+
+            _.each(aWelContents, function(el){
+                var sContent = $(el).html();
+                aResult.push(sContent);
+            });
+
+            alert(aResult.join('===============================================\n'));
+        }, this));
+    },
+
+    setKeyEvents : function (){
+        $(document)
+            .on("keydown keyup", 'div[contenteditable=true]', $.proxy(function (e){
+
+                this.resize();
+                if (e.which === 9) {
                     e.preventDefault();
-                } else if(e.which === 27){
+                } else if (e.which === 27) {
 
                     $(e.currentTarget).trigger('blur');
                     return;
 
                 } else if (e.which == 13) {
+                    // make sure br is always the lastChild of contenteditable
                     if (window.getSelection) {
                         var selection = window.getSelection(),
                             range = selection.getRangeAt(0),
@@ -103,52 +165,33 @@ var ContentEditorView = Backbone.View.extend({
 
                 }
 
+        }, this));
+    },
 
-            });
+    resize : function(){
+        setTimeout(function(){
+            $('#_content_editor').css('height', '');
+            var nHeight = $('#_content_editor').height();
+            $('#_content_editor').css('height', nHeight + 'px');
 
-        $('#_add_img').on('click', function(){
-            $('#_content_editor').append(_.template($('#_img_tmpl').html(), {
-                title : 'Meta Title',
-                description : 'Description'
+        }, 50);
+    },
 
-            }));
-
-            resize();
-        });
-
-        $('#_add_movie').on('click', function(){
-            $('#_content_editor').append(_.template($('#_movie_tmpl').html(), {
-                title : 'Meta Title',
-                description : 'Description'
-
-            }));
-            resize();
-        });
-
-        $('#_add_text').on('click', function(){
-
-            $('#_append_item').trigger('click');
-        });
-
-
-        this.initCKEditor();
-
-        this.$el.on('blur', 'div', $.proxy(function(e){
-
+    setEditorUIEvents : function (){
+        this.$el.on('blur', 'div', $.proxy(function (e){
 //            if($(e.currentTarget).attr('id') === '__cke'){
 //                return;
 //            }
-
             $(e.currentTarget)
                 .removeAttr('contenteditable')
                 .removeAttr('id');
 
 
-            if($(e.currentTarget).html() === ''){
+            if ($(e.currentTarget).html() === '') {
                 $(e.currentTarget).remove();
             }
 
-            if(this.editor){
+            if (this.editor) {
                 this.editor.destroy();
                 this.editor = null;
             }
@@ -156,16 +199,16 @@ var ContentEditorView = Backbone.View.extend({
             this.$el.sortable("option", 'disabled', false);
         }, this));
 
-        this.$el.on('click', '._remove', $.proxy(function(e){
+        this.$el.on('click', '._remove', $.proxy(function (e){
 
             var target = $(e.currentTarget).parent();
 
-            if(this.editor){
+            if (this.editor) {
                 this.editor.destroy();
                 this.editor = null;
             }
 
-            $(e.currentTarget).parent().slideUp(300, $.proxy(function(){
+            $(e.currentTarget).parent().slideUp(300, $.proxy(function (){
                 target.remove();
                 this.$el.sortable("option", 'disabled', false);
 
@@ -177,20 +220,20 @@ var ContentEditorView = Backbone.View.extend({
 
         }, this));
 
-        this.$el.on('mouseenter', 'div', $.proxy(function(e){
+        this.$el.on('mouseenter', 'div', $.proxy(function (e){
             $(e.currentTarget).addClass('hover');
             $(e.currentTarget).find('._remove').remove();
             $(e.currentTarget).prepend('<span class="_remove remove_item"></span>');
 
         }, this));
 
-        this.$el.on('mouseleave', 'div', $.proxy(function(e){
+        this.$el.on('mouseleave', 'div', $.proxy(function (e){
             $(e.currentTarget).removeClass('hover');
             $(e.currentTarget).find('._remove').remove();
         }, this));
 
 
-        $('#_append_item').on('click', $.proxy(function(e){
+        $('#_append_item').on('click', $.proxy(function (e){
 
             this.$el.find('._text').removeAttr('id');
 
@@ -210,16 +253,15 @@ var ContentEditorView = Backbone.View.extend({
             this.$el.sortable("option", 'disabled', true).enableSelection();
 
 
-
         }, this));
 
-        this.$el.on('click', 'div', $.proxy(function(e){
+        this.$el.on('click', 'div', $.proxy(function (e){
 
-            if(
+            if (
                 $(e.currentTarget).attr('id') === '__cke' ||
 //                $(e.currentTarget).hasClass('_text') === false ||
                 this.bSort === true
-            ){
+                ) {
                 return;
             }
 
@@ -238,50 +280,12 @@ var ContentEditorView = Backbone.View.extend({
 
             this.$el.sortable("option", 'disabled', true).enableSelection();
         }, this));
+    },
 
-
-
-        this.$el.sortable({
-            delay : 250,
-            axis : 'y',
-            tolerance: 'pointer',
-            revert: 250,
-
-//            containment: "parent",
-            cursor: "move",
-            start: $.proxy(function(e, ui ){
-
-                this.bSort = true;
-                ui.placeholder.height(ui.helper.height());
-                ui.helper.addClass('grap');
-
-                ui.placeholder.css("outline", "none");
-                ui.placeholder.css("border-radius", "3px");
-                ui.placeholder.css("border", "3px dashed #EEE");
-                ui.placeholder.css("box-sizing", "border-box");
-                ui.placeholder.css("visibility", "visible");
-                ui.placeholder.css("background-color", "#FFF");
-                ui.placeholder.css("box-shadow", "none");
-
-            }, this),
-
-            stop : $.proxy(function(e, ui){
-                this.bSort = false;
-                ui.item.removeClass('grap');
-            }, this)
-        }).disableSelection();
-
-
-        $('#_save').on('click', $.proxy(function(){
-            var aWelContents = this.$el.find('div');
-            var aResult = [];
-
-            _.each(aWelContents, function(el){
-                var sContent = $(el).html();
-                aResult.push(sContent);
-            });
-
-            alert(aResult.join('===============================================\n'));
-        }, this));
+    setEvents : function(){
+        this.setKeyEvents();
+        this.setToolEvents();
+        this.initCKEditor();
+        this.setEditorUIEvents();
     }
 });
