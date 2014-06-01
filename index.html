@@ -9,6 +9,7 @@
     <style>
         .editor_section{
 
+            position:relative;
             margin:0;
             padding:0;
         }
@@ -21,12 +22,15 @@
             background: #ccc;
         }
 
+        .editor_section > div:focus{
+            outline:1px dotted #DDD;
+        }
         .editor_section > div{
             /*border:1px solid #AAA;*/
             margin:0;
             padding:0px;
             position:relative;
-
+            overflow:auto;
             display:block;
             z-index:0;
             box-sizing:border-box;
@@ -72,6 +76,7 @@
 
 <body style="background-color:#EEE;margin:0;padding:0;">
 
+
 <div style="text-align:center;position:fixed;z-index:30000;top:0;left:0;padding:5px;background-color:#FFF;border-bottom:2px solid #333;width:100%;">
 
     <h3 style="margin:2px 10px;" class="navbar-text">
@@ -81,6 +86,10 @@
     <div class="navbar-right">
 
         <div class="btn-group" role="toolbar">
+            <button id="_bold" class="btn btn-default">
+                <span class="glyphicon glyphicon-picture" style="color:#333;"></span>
+                BOLD</button>
+
             <button id="_preview" class="btn btn-default">
                 <span class="glyphicon glyphicon-picture" style="color:#333;"></span>
                 미리보기</button>
@@ -99,31 +108,25 @@
         <button id="_save" class="btn btn-default btn-success">
             <span class="glyphicon glyphicon-picture"></span>
             &nbsp;&nbsp;&nbsp;&nbsp;저장&nbsp;&nbsp;&nbsp;&nbsp;</button>
-
     </div>
-
 </div>
 
-<div style="margin:20px;max-width: 900px;min-width: 500px;min-height: 600px;margin:auto;margin-top:100px;">
+<div style="max-width: 900px;min-width: 500px;min-height: 600px;margin:auto;margin-top:100px;">
 <div style="background-color:#FFF;border:1px solid #CCC;">
 
-    <div class="input-group input-group-lg" style="padding:10px 20px;width:100%;">
+    <div class="input-group input-group-lg" style="padding:10px 20px;width:100%;position:relative;">
         <input type="text" class="form-control" placeholder="Title" style="border-radius:5px;">
     </div>
 
 
-    <div class="input-group" style="padding:0 20px 10px 20px;width:100%;">
+    <div class="input-group" style="padding:0 20px 10px 20px;width:100%;position:relative;">
         <textarea type="text" class="form-control" placeholder="Description" style="border-radius:5px;width:100%;height:70px;"></textarea>
     </div>
 
-    <div id="_content_editor" class="editor_section" style="padding:15px;border-top:1px dotted #CCC;">
-        <!--<div>1<br>2<br>3<br></div>-->
-        <!--<div>1<br>2<br>3<br></div>-->
-        <!--<div>1<br>2<br>3<br></div>-->
-        <!--<div>4</div>-->
+    <div id="_content_editor" class="editor_section" style="margin:15px;border-top:1px dotted #CCC;">
     </div>
 
-    <div style="width:100%;padding:20px;text-align:center;font-size:20px;cursor:pointer;color:#CCC;" id="_append_item">
+    <div style="width:100%;padding:20px;text-align:center;font-size:20px;cursor:pointer;color:#CCC;clear:both;" id="_append_item">
 
         <span class="glyphicon glyphicon-plus"></span>
         Add Text
@@ -132,6 +135,34 @@
 
 <div style="background: url('bg.story.png') no-repeat right bottom;opacity: .5;filter: alpha(opacity=50);max-width: 900px;min-width: 500px;height: 16px;margin: 0 auto;"></div>
 </div>
+
+
+<script type="text/template" id="_img_tmpl">
+
+<div contenteditable="true" style="clear:both;">
+    <div style="clear:both;overflow:auto;">
+        <img src="cat.jpg" style="max-width:300px;float:left;margin:10px;">
+
+        <section style="margin:10px;margin-left:0;">
+            <h2><%= title %></h2>
+            <h4><%= description %></h4>
+        </section>
+    </div>
+</div>
+
+</script>
+
+<script type="text/template" id="_movie_tmpl">
+    <div contenteditable="true" style="clear:both;overflow:auto;">
+        <div style="float:left;">
+        <iframe width="560" height="315" src="//www.youtube.com/embed/NP5Cb3Gpjio" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <section style="margin:10px;margin-left:0;">
+            <h2><%= title %></h2>
+            <h4><%= description %></h4>
+        </section>
+    </div>
+</script>
 
 
 
@@ -144,19 +175,6 @@
 <script src="src/ContentEditorView.js"></script>
 <script>
 (function(){
-
-    $('#_add_img').on('click', function(){
-        $('#_content_editor').append('<div style="text-align:center;"><img src="cat.jpg" style="max-width:300px;"></div>')
-    });
-
-    $('#_add_movie').on('click', function(){
-        $('#_content_editor').append('<div style="text-align:center;"><iframe width="560" height="315" src="//www.youtube.com/embed/NP5Cb3Gpjio" frameborder="0" allowfullscreen></iframe></div>')
-    });
-
-    $('#_add_text').on('click', function(){
-
-        $('#_append_item').trigger('click');
-    });
 
     var oEditorView = new ContentEditorView({
         el : $('#_content_editor')
